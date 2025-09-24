@@ -1,6 +1,19 @@
 # HatiConfig
 
+[![Gem Version](https://badge.fury.io/rb/hati-config.svg)](https://rubygems.org/gems/hati-config)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
+
 A Ruby approach to configuration management, inspired by real-world challenges in distributed systems. This gem explores practical solutions for teams dealing with configuration complexity at scale.
+
+## Features
+
+- **Simple Configuration Management**: Easily define, set, and retrieve configuration options.
+- **Type Validation**: Ensure configurations are correct with built-in type validation.
+- **Multiple Formats**: Import and export configurations in JSON, YAML, and Hash formats.
+- **Nested Configurations**: Support for infinite nested configurations for complex applications.
+- **Classy Access**: Access configurations in a 'classy' manner for better organization and readability.
+- **Built-in Types**: Utilize various built-in types including basic types, data structures, numeric types, and time types.
+- **Extensible**: Easily extendable to accommodate custom configuration needs.
 
 ## Table of Contents
 
@@ -39,18 +52,6 @@ A Ruby approach to configuration management, inspired by real-world challenges i
   - [Contributing](#contributing)
   - [License](#license)
   - [Code of Conduct](#code-of-conduct)
-
----
-
-## Features
-
-- **Simple Configuration Management**: Easily define, set, and retrieve configuration options.
-- **Type Validation**: Ensure configurations are correct with built-in type validation.
-- **Multiple Formats**: Import and export configurations in JSON, YAML, and Hash formats.
-- **Nested Configurations**: Support for infinite nested configurations for complex applications.
-- **Classy Access**: Access configurations in a 'classy' manner for better organization and readability.
-- **Built-in Types**: Utilize various built-in types including basic types, data structures, numeric types, and time types.
-- **Extensible**: Easily extendable to accommodate custom configuration needs.
 
 ## Recent Updates
 

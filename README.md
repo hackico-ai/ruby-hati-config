@@ -54,7 +54,7 @@ A Ruby approach to configuration management, inspired by real-world challenges i
 
 ## Recent Updates
 
-### Version 1.1.0 (Latest)
+### Version 0.1.0 (Latest)
 
 - **Fixed**: Encryption functionality now works correctly with the `config(key, value: "secret", encrypted: true)` syntax
 - **Enhanced**: Improved encryption handling for both inline and hash-based configuration syntax

@@ -32,7 +32,7 @@ RSpec.describe HatiConfig::Schema do
 
   describe '#schema_version' do
     it 'returns the current schema version' do
-      dummy_class.schema(version: '2.0') {}
+      dummy_class.schema(version: '2.0') { |s| s.field :name, type: String }
       expect(dummy_class.schema_version).to eq('2.0')
     end
 

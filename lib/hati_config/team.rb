@@ -60,10 +60,11 @@ module HatiConfig
     #
     # @param team_name [Symbol] The name of the team
     # @return [Boolean] True if the team was removed
-    def remove_team(team_name)
-      return false unless team?(team_name)
+    def remove_team?(team_name)
+      const_name = team_name.to_s.capitalize
+      return false unless const_defined?(const_name)
 
-      remove_const(team_name.to_s.capitalize)
+      remove_const(const_name)
       true
     end
 

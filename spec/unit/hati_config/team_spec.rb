@@ -103,16 +103,16 @@ RSpec.describe HatiConfig::Team do
     end
   end
 
-  describe '#remove_team' do
+  describe '#remove_team?' do
     before { dummy_class.team(:frontend) }
 
     it 'removes an existing team' do
-      expect(dummy_class.remove_team(:frontend)).to be true
+      expect(dummy_class.remove_team?(:frontend)).to be true
       expect(dummy_class.team?(:frontend)).to be false
     end
 
     it 'returns false for non-existent team' do
-      expect(dummy_class.remove_team(:unknown)).to be false
+      expect(dummy_class.remove_team?(:unknown)).to be false
     end
   end
 

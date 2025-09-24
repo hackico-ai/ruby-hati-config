@@ -13,7 +13,9 @@ Gem::Specification.new do |spec|
   spec.license = 'MIT'
 
   spec.summary = 'Ruby configuration management for distributed systems and multi-team environments.'
-  spec.description = 'A practical approach to configuration management with type safety, team isolation, environment inheritance, encryption, and remote sources. Designed for teams dealing with configuration complexity at scale.'
+  spec.description = 'A practical approach to configuration management with type safety, team isolation, ' \
+                     'environment inheritance, encryption, and remote sources. Designed for teams dealing ' \
+                     'with configuration complexity at scale.'
   spec.homepage = "https://github.com/hackico-ai/#{spec.name}"
 
   spec.required_ruby_version = '>= 3.0.0'

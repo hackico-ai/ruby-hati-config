@@ -18,7 +18,7 @@ module HatiConfig
       # @param refresh_interval [Integer] Optional interval in seconds to refresh the configuration
       # @return [Hash] The loaded configuration
       # @raise [LoadDataError] If the configuration cannot be loaded
-      def from_http(url:, headers: {}, refresh_interval: nil)
+      def from_http(url:, headers: {})
         uri = URI(url)
         request = Net::HTTP::Get.new(uri)
         headers.each { |key, value| request[key] = value }
@@ -40,7 +40,7 @@ module HatiConfig
       # @param refresh_interval [Integer] Optional interval in seconds to refresh the configuration
       # @return [Hash] The loaded configuration
       # @raise [LoadDataError] If the configuration cannot be loaded
-      def from_s3(bucket:, key:, region:, refresh_interval: nil)
+      def from_s3(bucket:, key:, region:)
         s3 = Aws::S3::Client.new(region: region)
         response = s3.get_object(bucket: bucket, key: key)
         parse_response(response.body.read, File.extname(key))
@@ -57,7 +57,7 @@ module HatiConfig
       # @param refresh_interval [Integer] Optional interval in seconds to refresh the configuration
       # @return [Hash] The loaded configuration
       # @raise [LoadDataError] If the configuration cannot be loaded
-      def from_redis(host:, key:, port: 6379, db: 0, refresh_interval: nil)
+      def from_redis(host:, key:, port: 6379, db: 0)
         redis = Redis.new(host: host, port: port, db: db)
         data = redis.get(key)
         raise LoadDataError, "Key '#{key}' not found in Redis" unless data

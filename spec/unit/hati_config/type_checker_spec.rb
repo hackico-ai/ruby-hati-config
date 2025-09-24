@@ -51,13 +51,13 @@ RSpec.describe HatiConfig::TypeChecker do
     end
   end
 
-  describe '.custom_type' do
+  describe '.custom_type?' do
     it 'validates if value matches the custom type' do
-      expect(described_class.custom_type(cstm_stub.new, cstm_stub)).to be(true)
+      expect(described_class.custom_type?(cstm_stub.new, cstm_stub)).to be(true)
     end
 
     it 'validates if value does not match the custom type' do
-      expect(described_class.custom_type(1, cstm_stub)).to be(false)
+      expect(described_class.custom_type?(1, cstm_stub)).to be(false)
     end
   end
 

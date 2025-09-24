@@ -2,10 +2,33 @@
 
 require 'redis'
 require 'connection_pool'
+require 'json'
 
 module HatiConfig
   # Cache module provides functionality for caching and refreshing configurations.
   module Cache
+    # Module for handling numeric configuration attributes
+    module NumericConfigurable
+      def self.included(base)
+        base.extend(ClassMethods)
+      end
+
+      module ClassMethods
+        def numeric_accessor(*names)
+          names.each do |name|
+            define_method(name) do |value = nil|
+              if value.nil?
+                instance_variable_get(:"@#{name}")
+              else
+                instance_variable_set(:"@#{name}", value)
+                self
+              end
+            end
+          end
+        end
+      end
+    end
+
     # Defines caching behavior for configurations.
     #
     # @param adapter [Symbol] The cache adapter to use (:memory, :redis)
@@ -32,7 +55,25 @@ module HatiConfig
 
     # CacheConfig class handles cache configuration and behavior.
     class CacheConfig
-      attr_reader :adapter_type, :adapter_options, :ttl, :stale_while_revalidate
+      include NumericConfigurable
+
+      attr_reader :adapter_type, :adapter_options
+
+      numeric_accessor :ttl
+
+      def refresh(&block)
+        @refresh_config.instance_eval(&block) if block_given?
+        @refresh_config
+      end
+
+      def stale_while_revalidate(enabled = nil)
+        if enabled.nil?
+          @stale_while_revalidate
+        else
+          @stale_while_revalidate = enabled
+          self
+        end
+      end
 
       def initialize
         @adapter_type = :memory
@@ -49,15 +90,7 @@ module HatiConfig
       # @param options [Hash] Options for the adapter
       def adapter(*args, **kwargs)
         if args.empty? && kwargs.empty?
-          @adapter ||= case adapter_type
-                       when :memory
-                         MemoryAdapter.new
-                       when :redis
-                         RedisAdapter.new(adapter_options)
-                       else
-                         raise ArgumentError, "Unknown cache adapter: #{adapter_type}"
-                       end
-
+          @adapter ||= initialize_adapter
         else
           type = args[0]
           options = args[1] || kwargs
@@ -70,46 +103,17 @@ module HatiConfig
 
       attr_writer :adapter
 
-      def get_adapter
-        @get_adapter ||= case adapter_type
-                         when :memory
-                           MemoryAdapter.new
-                         when :redis
-                           RedisAdapter.new(adapter_options)
-                         else
-                           raise ArgumentError, "Unknown cache adapter: #{adapter_type}"
-                         end
-      end
+      private
 
-      # Sets the cache TTL.
-      #
-      # @param seconds [Integer] The TTL in seconds
-      def ttl(seconds = nil)
-        if seconds.nil?
-          @ttl
+      def initialize_adapter
+        case adapter_type
+        when :memory
+          MemoryAdapter.new
+        when :redis
+          RedisAdapter.new(adapter_options)
         else
-          @ttl = seconds
+          raise ArgumentError, "Unknown cache adapter: #{adapter_type}"
         end
-      end
-
-      # Enables/disables stale-while-revalidate behavior.
-      #
-      # @param enabled [Boolean] Whether to enable stale-while-revalidate
-      def stale_while_revalidate(enabled = nil)
-        if enabled.nil?
-          @stale_while_revalidate
-        else
-          @stale_while_revalidate = enabled
-          self
-        end
-      end
-
-      # Configures refresh behavior.
-      #
-      # @yield The refresh configuration block
-      def refresh(&block)
-        @refresh_config.instance_eval(&block) if block_given?
-        @refresh_config
       end
 
       # Gets a value from the cache.
@@ -139,34 +143,16 @@ module HatiConfig
 
     # RefreshConfig class handles refresh configuration and behavior.
     class RefreshConfig
+      include NumericConfigurable
+
       attr_reader :interval, :jitter, :backoff_config
+
+      numeric_accessor :interval, :jitter
 
       def initialize
         @interval = 60
         @jitter = 0
         @backoff_config = BackoffConfig.new
-      end
-
-      # Sets the refresh interval.
-      #
-      # @param seconds [Integer] The refresh interval in seconds
-      def interval(seconds = nil)
-        if seconds.nil?
-          @interval
-        else
-          @interval = seconds
-        end
-      end
-
-      # Sets the jitter amount.
-      #
-      # @param seconds [Integer] The jitter in seconds
-      def jitter(seconds = nil)
-        if seconds.nil?
-          @jitter
-        else
-          @jitter = seconds
-        end
       end
 
       # Configures backoff behavior.
@@ -188,45 +174,16 @@ module HatiConfig
 
     # BackoffConfig class handles backoff configuration and behavior.
     class BackoffConfig
+      include NumericConfigurable
+
       attr_reader :initial, :multiplier, :max
+
+      numeric_accessor :initial, :multiplier, :max
 
       def initialize
         @initial = 1
         @multiplier = 2
         @max = 300
-      end
-
-      # Sets the initial backoff time.
-      #
-      # @param seconds [Integer] The initial backoff in seconds
-      def initial(seconds = nil)
-        if seconds.nil?
-          @initial
-        else
-          @initial = seconds
-        end
-      end
-
-      # Sets the backoff multiplier.
-      #
-      # @param value [Integer] The backoff multiplier
-      def multiplier(value = nil)
-        if value.nil?
-          @multiplier
-        else
-          @multiplier = value
-        end
-      end
-
-      # Sets the maximum backoff time.
-      #
-      # @param seconds [Integer] The maximum backoff in seconds
-      def max(seconds = nil)
-        if seconds.nil?
-          @max
-        else
-          @max = seconds
-        end
       end
 
       # Gets the backoff time for a given attempt.

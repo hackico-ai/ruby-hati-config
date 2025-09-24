@@ -186,12 +186,13 @@ module HatiConfig
 
     # EnvKeyProvider gets the encryption key from an environment variable.
     class EnvKeyProvider < KeyProvider
-      def initialize(options)
+      def initialize(options = {})
+        super()
         @env_var = options[:env_var] || 'HATI_CONFIG_ENCRYPTION_KEY'
       end
 
       def key
-        key = ENV[@env_var]
+        key = ENV.fetch(@env_var, nil)
         raise EncryptionError, "Encryption key not found in environment variable #{@env_var}" unless key
 
         key
@@ -200,7 +201,8 @@ module HatiConfig
 
     # FileKeyProvider gets the encryption key from a file.
     class FileKeyProvider < KeyProvider
-      def initialize(options)
+      def initialize(options = {})
+        super()
         @file_path = options[:file_path]
         raise EncryptionError, 'File path not provided' unless @file_path
       end
@@ -216,7 +218,8 @@ module HatiConfig
 
     # AwsKmsKeyProvider gets the encryption key from AWS KMS.
     class AwsKmsKeyProvider < KeyProvider
-      def initialize(options)
+      def initialize(options = {})
+        super()
         require 'aws-sdk-kms'
         @key_id = options[:key_id]
         @region = options[:region]

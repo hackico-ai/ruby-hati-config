@@ -32,7 +32,7 @@ module HatiConfig
             one_of(value, type)
           end
         else
-          custom_type(value, type)
+          custom_type?(value, type)
         end
       end
 
@@ -66,7 +66,7 @@ module HatiConfig
       #   TypeChecker.one_of(nil, [:null, Integer, String]) # => true
       #   TypeChecker.one_of(1.5, [:int, :float, :big_decimal]) # => true
       def one_of(value, array_type)
-        array_type.any? { |type| type.is_a?(Symbol) ? base_type(value, type) : custom_type(value, type) }
+        array_type.any? { |type| type.is_a?(Symbol) ? base_type(value, type) : custom_type?(value, type) }
       end
 
       # Validates if value is of the specified custom type.
@@ -78,7 +78,7 @@ module HatiConfig
       # @example
       #   TypeChecker.custom_type(1, Integer) # => true
       #   TypeChecker.custom_type(CustomClass.new, CustomClass) # => true
-      def custom_type(value, type)
+      def custom_type?(value, type)
         value.is_a?(type)
       end
 

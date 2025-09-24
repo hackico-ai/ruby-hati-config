@@ -58,6 +58,21 @@ module HatiConfig
         @migrations = {}
       end
 
+      # Defines a field in the schema.
+      #
+      # @param name [Symbol] The field name
+      # @param type [Symbol, Class] The field type
+      # @param required [Boolean] Whether the field is required
+      # @param default [Object] The default value for optional fields
+      # @param since [String] The version since this field is available
+      def field(name, type:, required: true, default: nil, since: version)
+        if required
+          required(name, type: type, since: since)
+        else
+          optional(name, type: type, default: default, since: since)
+        end
+      end
+
       # Defines a required field in the schema.
       #
       # @param name [Symbol] The field name

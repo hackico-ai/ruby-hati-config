@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-require "spec_helper"
+require 'spec_helper'
 
-RSpec.describe "ClassLevel::Nested" do
+RSpec.describe 'ClassLevel::Nested' do
   let(:stng_values) do
     {
       one: 1,
-      text: "Lorem Ipsum",
+      text: 'Lorem Ipsum',
       float_point: 4.2,
       none: nil
     }
   end
 
-  context "when nested namespace" do
+  context 'when nested namespace' do
     let(:configs) do
       support_dummy_module.tap do |dummy_module|
         dummy_module.configure :settings do
@@ -27,13 +27,13 @@ RSpec.describe "ClassLevel::Nested" do
       end
     end
 
-    describe "declared typed #config" do
-      it "has #opt config param" do
+    describe 'declared typed #config' do
+      it 'has #opt config param' do
         configs.settings.config opt: stng_values[:text]
         expect(configs.settings.opt).to eq(stng_values[:text])
       end
 
-      it "has #dsl_opt config param" do
+      it 'has #dsl_opt config param' do
         test_value = stng_values[:text]
 
         configs.settings.nested do
@@ -43,24 +43,24 @@ RSpec.describe "ClassLevel::Nested" do
         expect(configs.settings.nested.dsl_opt).to eq(test_value)
       end
 
-      it "has #type_opt config param" do
+      it 'has #type_opt config param' do
         expect { configs.settings.nested.config(t_opt: stng_values[:text]) }.to raise_error(HatiConfig::SettingTypeError)
       end
 
-      it "has #t_opt config param" do
+      it 'has #t_opt config param' do
         expect do
           configs.settings.nested.config(type_opt: stng_values[:text])
         end.to raise_error(HatiConfig::SettingTypeError)
       end
 
-      it "has #cstm_type_opt config param" do
+      it 'has #cstm_type_opt config param' do
         expect do
           configs.settings.nested.config cstm_type_opt: stng_values[:text]
         end.to raise_error(HatiConfig::SettingTypeError)
       end
     end
 
-    context "when retrieving configuration details" do
+    context 'when retrieving configuration details' do
       before do
         val = stng_values
 
@@ -87,26 +87,26 @@ RSpec.describe "ClassLevel::Nested" do
         }
       end
 
-      it "returns the type schema of the configuration" do
+      it 'returns the type schema of the configuration' do
         expected_schema = { nested: { opt: :any, dsl_opt: :str, t_opt: :int, type_opt: :int, cstm_type_opt: Integer } }
 
         expect(configs.settings.type_schema).to eq(expected_schema)
       end
 
-      it "converts the configuration tree to a hash" do
+      it 'converts the configuration tree to a hash' do
         expect(configs.settings.to_h).to eq(expected_structure)
       end
 
-      it "converts the configuration tree to JSON" do
+      it 'converts the configuration tree to JSON' do
         expect(configs.settings.to_json).to eq(expected_structure.to_json)
       end
 
-      it "converts the configuration tree to YAML" do
+      it 'converts the configuration tree to YAML' do
         expect(configs.settings.to_yaml).to eq(expected_structure.to_yaml)
       end
     end
 
-    describe "#config" do
+    describe '#config' do
       let(:configs) do
         val = stng_values
 
@@ -133,36 +133,36 @@ RSpec.describe "ClassLevel::Nested" do
         }
       end
 
-      it "has #one configuration parameter" do
+      it 'has #one configuration parameter' do
         expect(configs.settings.nested.one).to eq(stng_values[:one])
       end
 
-      it "has #text configuration parameter" do
+      it 'has #text configuration parameter' do
         expect(configs.settings.nested.text).to eq(stng_values[:text])
       end
 
-      it "has #float_point configuration parameter" do
+      it 'has #float_point configuration parameter' do
         expect(configs.settings.nested.float_point).to eq(stng_values[:float_point])
       end
 
-      it "has #none configuration parameter" do
+      it 'has #none configuration parameter' do
         expect(configs.settings.nested.none).to eq(stng_values[:none])
       end
 
-      it "returns the type schema of the configuration" do
+      it 'returns the type schema of the configuration' do
         expected_schema = { nested: { one: :any, text: :str, float_point: :float, none: NilClass } }
         expect(configs.settings.type_schema).to eq(expected_schema)
       end
 
-      it "converts the configuration tree to a hash" do
+      it 'converts the configuration tree to a hash' do
         expect(configs.settings.to_h).to eq(expected_structure)
       end
 
-      it "converts the configuration tree to JSON" do
+      it 'converts the configuration tree to JSON' do
         expect(configs.settings.to_json).to eq(expected_structure.to_json)
       end
 
-      it "converts the configuration tree to YAML" do
+      it 'converts the configuration tree to YAML' do
         expect(configs.settings.to_yaml).to eq(expected_structure.to_yaml)
       end
     end

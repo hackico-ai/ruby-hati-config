@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-require "hati_config/version"
-require "hati_config/errors"
-require "hati_config/type_map"
-require "hati_config/type_checker"
-require "hati_config/remote_loader"
-require "hati_config/environment"
-require "hati_config/team"
-require "hati_config/schema"
-require "hati_config/cache"
-require "hati_config/encryption"
-require "hati_config/setting"
-require "hati_config/configuration"
-require "hati_config/hati_configuration"
+require 'hati_config/version'
+require 'hati_config/errors'
+require 'hati_config/type_map'
+require 'hati_config/type_checker'
+require 'hati_config/remote_loader'
+require 'hati_config/environment'
+require 'hati_config/team'
+require 'hati_config/schema'
+require 'hati_config/cache'
+require 'hati_config/encryption'
+require 'hati_config/setting'
+require 'hati_config/configuration'
+require 'hati_config/hati_configuration'

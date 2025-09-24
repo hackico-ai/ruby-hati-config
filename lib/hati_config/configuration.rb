@@ -128,13 +128,13 @@ module HatiConfig
                RemoteLoader.from_redis(**opts[:redis])
              end
 
-      raise HatiConfig::LoadDataError, "Invalid load source type" unless data
+      raise HatiConfig::LoadDataError, 'Invalid load source type' unless data
 
       data
     rescue JSON::ParserError
-      raise HatiConfig::LoadDataError, "Invalid JSON format"
+      raise HatiConfig::LoadDataError, 'Invalid JSON format'
     rescue Errno::ENOENT
-      raise HatiConfig::LoadDataError, "YAML file not found"
+      raise HatiConfig::LoadDataError, 'YAML file not found'
     end
   end
 end

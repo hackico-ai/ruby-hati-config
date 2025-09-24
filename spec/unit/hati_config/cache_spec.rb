@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "spec_helper"
+require 'spec_helper'
 
 RSpec.describe HatiConfig::Cache do
   let(:dummy_class) do
@@ -9,8 +9,8 @@ RSpec.describe HatiConfig::Cache do
     end
   end
 
-  describe "#cache" do
-    it "creates a cache configuration with default values" do
+  describe '#cache' do
+    it 'creates a cache configuration with default values' do
       config = dummy_class.cache
 
       expect(config.adapter_type).to eq(:memory)
@@ -18,25 +18,25 @@ RSpec.describe HatiConfig::Cache do
       expect(config.stale_while_revalidate).to be false
     end
 
-    it "configures cache with a block" do
+    it 'configures cache with a block' do
       config = dummy_class.cache do
-        adapter :redis, url: "redis://localhost:6379/0"
+        adapter :redis, url: 'redis://localhost:6379/0'
         ttl 600
         stale_while_revalidate true
       end
 
       expect(config.adapter_type).to eq(:redis)
-      expect(config.adapter_options).to eq(url: "redis://localhost:6379/0")
+      expect(config.adapter_options).to eq(url: 'redis://localhost:6379/0')
       expect(config.ttl).to eq(600)
       expect(config.stale_while_revalidate).to be true
     end
   end
 
-  describe "CacheConfig" do
+  describe 'CacheConfig' do
     let(:config) { dummy_class.cache }
 
-    describe "#refresh" do
-      it "configures refresh behavior" do
+    describe '#refresh' do
+      it 'configures refresh behavior' do
         config.refresh do
           interval 30
           jitter 5
@@ -55,32 +55,32 @@ RSpec.describe HatiConfig::Cache do
       end
     end
 
-    describe "MemoryAdapter" do
+    describe 'MemoryAdapter' do
       let(:adapter) { config.adapter }
 
-      it "stores and retrieves values" do
-        adapter.set("key", "value", 60)
-        expect(adapter.get("key")).to eq("value")
+      it 'stores and retrieves values' do
+        adapter.set('key', 'value', 60)
+        expect(adapter.get('key')).to eq('value')
       end
 
-      it "respects TTL" do
-        adapter.set("key", "value", 0)
-        expect(adapter.get("key")).to be_nil
+      it 'respects TTL' do
+        adapter.set('key', 'value', 0)
+        expect(adapter.get('key')).to be_nil
       end
 
-      it "deletes values" do
-        adapter.set("key", "value", 60)
-        adapter.delete("key")
-        expect(adapter.get("key")).to be_nil
+      it 'deletes values' do
+        adapter.set('key', 'value', 60)
+        adapter.delete('key')
+        expect(adapter.get('key')).to be_nil
       end
     end
 
-    describe "RedisAdapter" do
+    describe 'RedisAdapter' do
       let(:redis_client) { instance_double(Redis) }
       let(:connection_pool) { instance_double(ConnectionPool) }
       let(:redis_config) do
         dummy_class.cache do
-          adapter :redis, url: "redis://localhost:6379/0"
+          adapter :redis, url: 'redis://localhost:6379/0'
         end
       end
 
@@ -94,47 +94,47 @@ RSpec.describe HatiConfig::Cache do
         allow(redis_client).to receive(:del)
       end
 
-      it "stores and retrieves values" do
-        value = "value"
+      it 'stores and retrieves values' do
+        value = 'value'
         serialized_value = Marshal.dump(value)
         allow(redis_client).to receive(:get).and_return(serialized_value)
-        adapter.set("key", value, 60)
-        expect(adapter.get("key")).to eq(value)
-        expect(redis_client).to have_received(:setex).with("key", 60, serialized_value)
+        adapter.set('key', value, 60)
+        expect(adapter.get('key')).to eq(value)
+        expect(redis_client).to have_received(:setex).with('key', 60, serialized_value)
       end
 
-      it "respects TTL" do
-        value = "value"
+      it 'respects TTL' do
+        value = 'value'
         serialized_value = Marshal.dump(value)
         allow(redis_client).to receive(:get).and_return(serialized_value, nil)
-        adapter.set("key", value, 1)
-        expect(adapter.get("key")).to eq(value)
+        adapter.set('key', value, 1)
+        expect(adapter.get('key')).to eq(value)
         # Simulate time passing, Redis handles actual expiry
-        expect(adapter.get("key")).to be_nil
+        expect(adapter.get('key')).to be_nil
       end
 
-      it "deletes values" do
-        value = "value"
-        adapter.set("key", value, 60)
-        adapter.delete("key")
-        expect(redis_client).to have_received(:del).with("key")
+      it 'deletes values' do
+        value = 'value'
+        adapter.set('key', value, 60)
+        adapter.delete('key')
+        expect(redis_client).to have_received(:del).with('key')
       end
 
-      it "handles complex objects" do
-        value = { array: [1, 2, 3], hash: { key: "value" } }
+      it 'handles complex objects' do
+        value = { array: [1, 2, 3], hash: { key: 'value' } }
         serialized_value = Marshal.dump(value)
         allow(redis_client).to receive(:get).and_return(serialized_value)
-        adapter.set("key", value, 60)
-        expect(adapter.get("key")).to eq(value)
+        adapter.set('key', value, 60)
+        expect(adapter.get('key')).to eq(value)
       end
     end
   end
 
-  describe "RefreshConfig" do
+  describe 'RefreshConfig' do
     let(:config) { dummy_class.cache.refresh }
 
-    describe "#next_refresh_time" do
-      it "includes interval" do
+    describe '#next_refresh_time' do
+      it 'includes interval' do
         config.interval(30)
         config.jitter(0)
 
@@ -142,7 +142,7 @@ RSpec.describe HatiConfig::Cache do
         expect(next_time).to be_within(1).of(Time.now + 30)
       end
 
-      it "includes random jitter" do
+      it 'includes random jitter' do
         config.interval(30)
         config.jitter(10)
 
@@ -156,27 +156,27 @@ RSpec.describe HatiConfig::Cache do
     end
   end
 
-  describe "BackoffConfig" do
+  describe 'BackoffConfig' do
     let(:config) { dummy_class.cache.refresh.backoff_config }
 
-    describe "#backoff_time" do
+    describe '#backoff_time' do
       before do
         config.initial(1)
         config.multiplier(2)
         config.max(8)
       end
 
-      it "starts with initial time" do
+      it 'starts with initial time' do
         expect(config.backoff_time(1)).to eq(1)
       end
 
-      it "applies multiplier for subsequent attempts" do
+      it 'applies multiplier for subsequent attempts' do
         expect(config.backoff_time(2)).to eq(2)
         expect(config.backoff_time(3)).to eq(4)
         expect(config.backoff_time(4)).to eq(8)
       end
 
-      it "respects maximum time" do
+      it 'respects maximum time' do
         expect(config.backoff_time(5)).to eq(8)
       end
     end

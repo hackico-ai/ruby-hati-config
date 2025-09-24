@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "yaml"
-require "json"
+require 'yaml'
+require 'json'
 
 # HatiConfig module provides functionality for managing HatiConfig features.
 module HatiConfig
@@ -153,14 +153,14 @@ module HatiConfig
           value.instance_eval(&block) if block_given?
         elsif !value.nil?
           # If we're setting a new value or updating an existing one
-          raise SettingTypeError.new("string (encrypted values must be strings)", value) unless value.is_a?(String)
+          raise SettingTypeError.new('string (encrypted values must be strings)', value) unless value.is_a?(String)
 
           stngs[:value] = self.class.encryption_config.encrypt(value)
           @encrypted_tree[stngs[:name]] = true
           # If we're just marking an existing value as encrypted
         elsif config_tree[stngs[:name]]
           value = config_tree[stngs[:name]]
-          raise SettingTypeError.new("string (encrypted values must be strings)", value) unless value.is_a?(String)
+          raise SettingTypeError.new('string (encrypted values must be strings)', value) unless value.is_a?(String)
 
           stngs[:value] = self.class.encryption_config.encrypt(value)
           @encrypted_tree[stngs[:name]] = true
@@ -357,7 +357,7 @@ module HatiConfig
         return get_value(stng_name) unless value || encrypted
 
         if encrypted && !value.nil? && !value.is_a?(String)
-          raise SettingTypeError.new("string (encrypted values must be strings)", value)
+          raise SettingTypeError.new('string (encrypted values must be strings)', value)
         end
 
         config(**{ stng_name => value, type: type, lock: lock, encrypted: encrypted })

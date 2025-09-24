@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "redis"
-require "connection_pool"
+require 'redis'
+require 'connection_pool'
 
 module HatiConfig
   # Cache module provides functionality for caching and refreshing configurations.
@@ -49,16 +49,15 @@ module HatiConfig
       # @param options [Hash] Options for the adapter
       def adapter(*args, **kwargs)
         if args.empty? && kwargs.empty?
-          @adapter ||= begin
-            case adapter_type
-            when :memory
-              MemoryAdapter.new
-            when :redis
-              RedisAdapter.new(adapter_options)
-            else
-              raise ArgumentError, "Unknown cache adapter: #{adapter_type}"
-            end
-          end
+          @adapter ||= case adapter_type
+                       when :memory
+                         MemoryAdapter.new
+                       when :redis
+                         RedisAdapter.new(adapter_options)
+                       else
+                         raise ArgumentError, "Unknown cache adapter: #{adapter_type}"
+                       end
+
         else
           type = args[0]
           options = args[1] || kwargs
@@ -69,29 +68,17 @@ module HatiConfig
         end
       end
 
-      def adapter_type
-        @adapter_type
-      end
-
-      def adapter_options
-        @adapter_options
-      end
-
-      def adapter=(adapter)
-        @adapter = adapter
-      end
+      attr_writer :adapter
 
       def get_adapter
-        @adapter ||= begin
-          case adapter_type
-          when :memory
-            MemoryAdapter.new
-          when :redis
-            RedisAdapter.new(adapter_options)
-          else
-            raise ArgumentError, "Unknown cache adapter: #{adapter_type}"
-          end
-        end
+        @get_adapter ||= case adapter_type
+                         when :memory
+                           MemoryAdapter.new
+                         when :redis
+                           RedisAdapter.new(adapter_options)
+                         else
+                           raise ArgumentError, "Unknown cache adapter: #{adapter_type}"
+                         end
       end
 
       # Sets the cache TTL.
@@ -148,7 +135,6 @@ module HatiConfig
       def delete(key)
         adapter.delete(key)
       end
-
     end
 
     # RefreshConfig class handles refresh configuration and behavior.
@@ -195,7 +181,7 @@ module HatiConfig
       #
       # @return [Time] The next refresh time
       def next_refresh_time
-        jitter_amount = jitter > 0 ? rand(0.0..jitter) : 0
+        jitter_amount = jitter.positive? ? rand(0.0..jitter) : 0
         Time.now + interval + jitter_amount
       end
     end
@@ -248,7 +234,7 @@ module HatiConfig
       # @param attempt [Integer] The attempt number
       # @return [Integer] The backoff time in seconds
       def backoff_time(attempt)
-        time = initial * (multiplier ** (attempt - 1))
+        time = initial * (multiplier**(attempt - 1))
         [time, max].min
       end
     end

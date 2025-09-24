@@ -13,7 +13,7 @@ module HatiConfig
     #     optional :pool_size, type: :integer, default: 5
     #     deprecated :old_setting, since: "1.0", remove_in: "2.0"
     #   end
-    def schema(version: "1.0", &block)
+    def schema(version: '1.0', &block)
       @schema_version = version
       @schema_definition = SchemaDefinition.new(version)
       @schema_definition.instance_eval(&block) if block_given?
@@ -24,7 +24,7 @@ module HatiConfig
     #
     # @return [String] The current schema version
     def schema_version
-      @schema_version || "1.0"
+      @schema_version || '1.0'
     end
 
     # Gets the schema definition.
@@ -91,34 +91,34 @@ module HatiConfig
       # @param from_version [String] The source version
       # @param to_version [String] The target version
       # @param block [Proc] The migration block
-          def add_migration(from_version, to_version = nil, block = nil, &implicit_block)
-            if block.nil? && to_version.respond_to?(:call)
-              # Handle the case where to_version is the block
-              block = to_version
-              if from_version.is_a?(Hash)
-                from_version, to_version = from_version.first
-              else
-                from_version, to_version = from_version.to_s.gsub(/['"{}]/, "").split("=>").map(&:strip)
-              end
-            end
-
-            migration_block = block || implicit_block
-            raise MigrationError, "Invalid migration format" unless from_version && to_version && migration_block
-
-            key = migration_key(from_version, to_version)
-            @migrations[key] = migration_block
+      def add_migration(from_version, to_version = nil, block = nil, &implicit_block)
+        if block.nil? && to_version.respond_to?(:call)
+          # Handle the case where to_version is the block
+          block = to_version
+          if from_version.is_a?(Hash)
+            from_version, to_version = from_version.first
+          else
+            from_version, to_version = from_version.to_s.gsub(/['"{}]/, '').split('=>').map(&:strip)
           end
+        end
 
-          def migration(versions, &block)
-            if versions.is_a?(Hash)
-              from_version, to_version = versions.first
-            else
-              from_version, to_version = versions.to_s.gsub(/['"{}]/, "").split("=>").map(&:strip)
-            end
-            raise MigrationError, "Invalid migration format" unless from_version && to_version
+        migration_block = block || implicit_block
+        raise MigrationError, 'Invalid migration format' unless from_version && to_version && migration_block
 
-            add_migration(from_version, to_version, nil, &block)
-          end
+        key = migration_key(from_version, to_version)
+        @migrations[key] = migration_block
+      end
+
+      def migration(versions, &block)
+        if versions.is_a?(Hash)
+          from_version, to_version = versions.first
+        else
+          from_version, to_version = versions.to_s.gsub(/['"{}]/, '').split('=>').map(&:strip)
+        end
+        raise MigrationError, 'Invalid migration format' unless from_version && to_version
+
+        add_migration(from_version, to_version, nil, &block)
+      end
 
       # Validates configuration data against the schema.
       #
@@ -152,8 +152,6 @@ module HatiConfig
       def migration_key(from_version, to_version)
         "#{from_version}-#{to_version}"
       end
-
-      private
 
       def validate_required_fields(data, current_version)
         required_fields.each do |name, field|

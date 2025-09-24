@@ -25,6 +25,7 @@ module HatiConfig
           if type.length == 1 && type.first.is_a?(Symbol)
             # Array type validation (e.g., [:string] for array of strings)
             return false unless value.is_a?(Array)
+
             value.all? { |v| call(v, type: type.first) }
           else
             # Union type validation (e.g., [:string, Integer] for string or integer)

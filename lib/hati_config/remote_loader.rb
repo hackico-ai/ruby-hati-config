@@ -84,4 +84,3 @@ module HatiConfig
     end
   end
 end
-

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "spec_helper"
+require 'spec_helper'
 
 RSpec.describe HatiConfig::Setting do
   let(:dummy_class) do
@@ -12,79 +12,79 @@ RSpec.describe HatiConfig::Setting do
   let(:settings) { described_class.new }
 
   before do
-    ENV["HATI_CONFIG_ENCRYPTION_KEY"] = "0" * 32 # 256-bit key
+    ENV['HATI_CONFIG_ENCRYPTION_KEY'] = '0' * 32 # 256-bit key
     settings.class.encryption do
       key_provider :env
     end
   end
 
   after do
-    ENV.delete("HATI_CONFIG_ENCRYPTION_KEY")
+    ENV.delete('HATI_CONFIG_ENCRYPTION_KEY')
   end
 
-  describe "encrypted values" do
-    it "encrypts and decrypts values" do
-      settings.config(:password, value: "secret123", encrypted: true)
+  describe 'encrypted values' do
+    it 'encrypts and decrypts values' do
+      settings.config(:password, value: 'secret123', encrypted: true)
       encrypted_value = settings.instance_variable_get(:@config_tree)[:password]
-      expect(encrypted_value).not_to eq("secret123")
-      expect(settings[:password]).to eq("secret123")
+      expect(encrypted_value).not_to eq('secret123')
+      expect(settings[:password]).to eq('secret123')
     end
 
-    it "raises error for non-string encrypted values" do
+    it 'raises error for non-string encrypted values' do
       expect do
         settings.config(:number, value: 123, encrypted: true)
       end.to raise_error(HatiConfig::SettingTypeError, /must be strings/)
     end
 
-    it "handles encrypted values in nested settings" do
+    it 'handles encrypted values in nested settings' do
       settings.configure(:database) do
-        config(:password, value: "secret123", encrypted: true)
+        config(:password, value: 'secret123', encrypted: true)
       end
 
       encrypted_value = settings.database.instance_variable_get(:@config_tree)[:password]
-      expect(encrypted_value).not_to eq("secret123")
-      expect(settings.database[:password]).to eq("secret123")
+      expect(encrypted_value).not_to eq('secret123')
+      expect(settings.database[:password]).to eq('secret123')
     end
 
-    it "preserves encryption when converting to hash" do
-      settings.config(:password, value: "secret123", encrypted: true)
+    it 'preserves encryption when converting to hash' do
+      settings.config(:password, value: 'secret123', encrypted: true)
       hash = settings.to_h
-      expect(hash[:password]).to eq("secret123")
+      expect(hash[:password]).to eq('secret123')
     end
 
-    it "preserves encryption in nested hashes" do
+    it 'preserves encryption in nested hashes' do
       settings.configure(:database) do
-        config(:password, value: "secret123", encrypted: true)
-        config(:host, value: "localhost")
+        config(:password, value: 'secret123', encrypted: true)
+        config(:host, value: 'localhost')
       end
 
       hash = settings.to_h
-      expect(hash[:database][:password]).to eq("secret123")
-      expect(hash[:database][:host]).to eq("localhost")
+      expect(hash[:database][:password]).to eq('secret123')
+      expect(hash[:database][:host]).to eq('localhost')
     end
 
-    it "supports hash-like access for encrypted values" do
-      settings[:password] = "secret123"
+    it 'supports hash-like access for encrypted values' do
+      settings[:password] = 'secret123'
       settings.config(:password, encrypted: true)
-      expect(settings[:password]).to eq("secret123")
+      expect(settings[:password]).to eq('secret123')
     end
 
-    it "supports multiple encrypted values" do
-      settings.config(:password, value: "secret123", encrypted: true)
-      settings.config(:api_key, value: "abc123", encrypted: true)
-      settings.config(:host, value: "localhost")
+    it 'supports multiple encrypted values' do
+      settings.config(:password, value: 'secret123', encrypted: true)
+      settings.config(:api_key, value: 'abc123', encrypted: true)
+      settings.config(:host, value: 'localhost')
 
-      expect(settings[:password]).to eq("secret123")
-      expect(settings[:api_key]).to eq("abc123")
-      expect(settings[:host]).to eq("localhost")
+      expect(settings[:password]).to eq('secret123')
+      expect(settings[:api_key]).to eq('abc123')
+      expect(settings[:host]).to eq('localhost')
     end
 
-    it "preserves encryption when loading from hash" do
+    it 'preserves encryption when loading from hash' do
       settings.load_from_hash(
         {
           database: {
-            password: "secret123",
-            host: "localhost"
+            password: 'secret123',
+            host: 'localhost'
           }
         },
         schema: {
@@ -99,9 +99,8 @@ RSpec.describe HatiConfig::Setting do
         config(:password, encrypted: true)
       end
 
-      expect(settings.database[:password]).to eq("secret123")
-      expect(settings.database[:host]).to eq("localhost")
+      expect(settings.database[:password]).to eq('secret123')
+      expect(settings.database[:host]).to eq('localhost')
     end
   end
 end
-

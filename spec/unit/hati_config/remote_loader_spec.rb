@@ -136,4 +136,3 @@ RSpec.describe HatiConfig::RemoteLoader do
     end
   end
 end
-

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "tempfile"
+require 'tempfile'
 
 # YamlFile module provides utility methods for handling YAML files in tests.
 module YamlFile
@@ -19,8 +19,8 @@ module YamlFile
   #     puts file.read
   #   end
   def support_yaml_file_tempfile
-    Tempfile.create(["config", ".yml"]) do |temp_file|
-      temp_file.write({ username: "admin", max_connections: 10 }.to_yaml)
+    Tempfile.create(['config', '.yml']) do |temp_file|
+      temp_file.write({ username: 'admin', max_connections: 10 }.to_yaml)
       temp_file.rewind
 
       yield temp_file

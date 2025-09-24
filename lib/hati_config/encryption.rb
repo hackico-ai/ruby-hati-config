@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "openssl"
-require "base64"
+require 'openssl'
+require 'base64'
 
 module HatiConfig
   # Encryption module provides methods for encrypting and decrypting sensitive configuration values.
@@ -34,9 +34,9 @@ module HatiConfig
         @key_provider = nil
         @key_provider_type = nil
         @key_provider_options = {}
-        @algorithm = "aes"
+        @algorithm = 'aes'
         @key_size = 256
-        @mode = "gcm"
+        @mode = 'gcm'
       end
 
       # Sets the key provider.
@@ -96,15 +96,15 @@ module HatiConfig
       # @return [String] The encrypted value in Base64 format
       # @raise [EncryptionError] If encryption fails
       def encrypt(value)
-        raise EncryptionError, "No key provider configured" unless @key_provider
+        raise EncryptionError, 'No key provider configured' unless @key_provider
 
         begin
           cipher = OpenSSL::Cipher.new("#{@algorithm}-#{@key_size}-#{@mode}")
           cipher.encrypt
           cipher.key = @key_provider.key
 
-          if @mode == "gcm"
-            cipher.auth_data = ""
+          if @mode == 'gcm'
+            cipher.auth_data = ''
             iv = cipher.random_iv
             cipher.iv = iv
             ciphertext = cipher.update(value.to_s) + cipher.final
@@ -131,7 +131,7 @@ module HatiConfig
       # @return [String] The decrypted value
       # @raise [EncryptionError] If decryption fails
       def decrypt(encrypted_value)
-        raise EncryptionError, "No key provider configured" unless @key_provider
+        raise EncryptionError, 'No key provider configured' unless @key_provider
         return nil if encrypted_value.nil?
 
         begin
@@ -140,23 +140,22 @@ module HatiConfig
           cipher.decrypt
           cipher.key = @key_provider.key
 
-          if @mode == "gcm"
+          if @mode == 'gcm'
             iv = data[0, 12] # GCM uses 12-byte IV
             auth_tag = data[12, 16] # GCM uses 16-byte auth tag
-            ciphertext = data[28..-1]
+            ciphertext = data[28..]
 
             cipher.iv = iv
             cipher.auth_tag = auth_tag
-            cipher.auth_data = ""
+            cipher.auth_data = ''
 
-            cipher.update(ciphertext) + cipher.final
           else
             iv = data[0, 16] # Other modes typically use 16-byte IV
-            ciphertext = data[16..-1]
+            ciphertext = data[16..]
 
             cipher.iv = iv
-            cipher.update(ciphertext) + cipher.final
           end
+          cipher.update(ciphertext) + cipher.final
         rescue OpenSSL::Cipher::CipherError => e
           raise EncryptionError, "Decryption failed: #{e.message}"
         rescue ArgumentError => e
@@ -181,14 +180,14 @@ module HatiConfig
       end
 
       def key
-        raise NotImplementedError, "Subclasses must implement #key"
+        raise NotImplementedError, 'Subclasses must implement #key'
       end
     end
 
     # EnvKeyProvider gets the encryption key from an environment variable.
     class EnvKeyProvider < KeyProvider
       def initialize(options)
-        @env_var = options[:env_var] || "HATI_CONFIG_ENCRYPTION_KEY"
+        @env_var = options[:env_var] || 'HATI_CONFIG_ENCRYPTION_KEY'
       end
 
       def key
@@ -203,7 +202,7 @@ module HatiConfig
     class FileKeyProvider < KeyProvider
       def initialize(options)
         @file_path = options[:file_path]
-        raise EncryptionError, "File path not provided" unless @file_path
+        raise EncryptionError, 'File path not provided' unless @file_path
       end
 
       def key
@@ -218,11 +217,11 @@ module HatiConfig
     # AwsKmsKeyProvider gets the encryption key from AWS KMS.
     class AwsKmsKeyProvider < KeyProvider
       def initialize(options)
-        require "aws-sdk-kms"
+        require 'aws-sdk-kms'
         @key_id = options[:key_id]
         @region = options[:region]
         @client = nil
-        raise EncryptionError, "KMS key ID not provided" unless @key_id
+        raise EncryptionError, 'KMS key ID not provided' unless @key_id
       end
 
       def key
@@ -230,7 +229,7 @@ module HatiConfig
           client = Aws::KMS::Client.new(region: @region)
           response = client.generate_data_key(
             key_id: @key_id,
-            key_spec: "AES_256"
+            key_spec: 'AES_256'
           )
           response.plaintext
         rescue Aws::KMS::Errors::ServiceError => e

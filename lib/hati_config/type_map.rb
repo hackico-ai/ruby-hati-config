@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "bigdecimal"
-require "date"
+require 'bigdecimal'
+require 'date'
 
 # HatiConfig module provides functionality for managing HatiConfig features.
 module HatiConfig

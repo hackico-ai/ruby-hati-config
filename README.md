@@ -62,6 +62,7 @@ A Ruby approach to configuration management, inspired by real-world challenges i
 - **Updated**: Comprehensive encryption documentation with practical examples
 
 ---
+
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
@@ -793,6 +794,10 @@ MyGem.settings.type_schema # => {:opt_one=>:int, :opt_two=>:str}
 :kernel_num => [Integer, Float, BigDecimal, Complex, Rational],
 :chrono     => [Date, DateTime, Time]
 ```
+
+## Authors
+
+- **Mariya Giy** ([@MarieGiy](https://github.com/MarieGiy))
 
 ## Development
 
